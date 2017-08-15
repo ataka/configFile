@@ -1,0 +1,9 @@
+{
+    "year": 2017,
+    "verbose": true,
+    "token": {
+        "Foo": "abcdefg",
+        "Bar": "0123-456-789"
+    },
+    "Unread Field": false
+}
