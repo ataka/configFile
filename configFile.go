@@ -22,33 +22,36 @@ func NewConfigFile(filename string, v interface{}) *ConfigFile {
 
 func (f *ConfigFile) Read() {
 	filename := f.filename
-	path, ok := filepath(filename)
+	pathes, ok := filepathes(filename)
 	if !ok {
-		log.Fatal("Cannot find Config file: ", path)
+		log.Fatal("Cannot find Config file: ", filename)
 	}
 
-	raw, err := ioutil.ReadFile(path)
-	if err != nil {
-		log.Fatal("Cannot open Config file: ", path)
-	}
+	for _, path := range pathes {
+		raw, err := ioutil.ReadFile(path)
+		if err != nil {
+			log.Fatal("Cannot open Config file: ", path)
+		}
 
-	json.Unmarshal(raw, &f.v)
+		json.Unmarshal(raw, &f.v)
+	}
 }
 
-func filepath(filename string) (string, bool) {
+func filepathes(filename string) ([]string, bool) {
+	pathes := make([]string, 0)
 	base := path.Base(filename)
-
-	current := path.Join(".", base)
-	if exists(current) {
-		return current, true
-	}
 
 	home := path.Join(os.Getenv("HOME"), base)
 	if exists(home) {
-		return home, true
+		pathes = append(pathes, home)
 	}
 
-	return filename, false
+	current := path.Join(".", base)
+	if exists(current) {
+		pathes = append(pathes, current)
+	}
+
+	return pathes, (len(pathes) > 0)
 }
 
 func exists(filepath string) bool {
